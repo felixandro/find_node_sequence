@@ -112,3 +112,5 @@ st.divider()
 st.header('Salidas')
 
 st.write(st.session_state["node_sequences_df"])
+
+st.session_state["node_sequences_df"].to_csv("salida.csv")
