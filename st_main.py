@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import geopandas as gpd
-from scripts.find_node_sequence import find_node_sequence
+from find_node_sequence import find_node_sequence
 
 ###################
 #### Funciones ####
