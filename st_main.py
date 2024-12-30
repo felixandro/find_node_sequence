@@ -96,9 +96,14 @@ nodes_zip = st.file_uploader("Nodos")
 edges_zip = st.file_uploader("Arcos")
 routes_zip = st.file_uploader("Rutas")
 
-nodes_gdf = gpd.read_file(nodes_zip)
-edges_gdf = gpd.read_file(edges_zip)
-routes_gdf = gpd.read_file(routes_zip)
+if "nodes_gdf" not in st.session_state:
+    st.session_state["nodes_gdf"] = gpd.read_file(nodes_zip)
+
+if "edges_gdf" not in st.session_state:
+    st.session_state["edges_gdf"] = gpd.read_file(edges_zip)
+
+if "routes_gdf" not in st.session_state:
+    st.session_state["routes_gdf"] = gpd.read_file(routes_zip)
 
 # División
 st.divider()
@@ -108,9 +113,9 @@ st.divider()
 find_node_sequence_button = st.button("Encontrar Secuencia de Nodos",
                                       type = "primary",
                                       on_click = find_node_sequence_to_all_routes,
-                                      args = (nodes_gdf, node_id_col, 
-                                              edges_gdf, start_node_col, end_node_col,
-                                              routes_gdf, route_id_col, route_direction_col))
+                                      args = (st.session_state["nodes_gdf"], node_id_col, 
+                                              st.session_state["edges_gdf"], start_node_col, end_node_col,
+                                              st.session_state["routes_gdf"], route_id_col, route_direction_col))
 
 progress_bar = st.progress(0, text = "Buscando Secuencia de Nodos")
 progress_bar.empty()
