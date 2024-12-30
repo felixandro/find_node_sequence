@@ -92,6 +92,8 @@ st.header('Entradas')
 
 # Subsubtítulo de Input de Nodos
 
+st.subheader("Nodos")
+
 st.file_uploader("Nodos")
 
 # División
