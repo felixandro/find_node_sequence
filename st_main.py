@@ -96,13 +96,13 @@ nodes_zip = st.file_uploader("Nodos")
 edges_zip = st.file_uploader("Arcos")
 routes_zip = st.file_uploader("Rutas")
 
-if "nodes_gdf" not in st.session_state:
+if nodes_zip is not None:
     st.session_state["nodes_gdf"] = gpd.read_file(nodes_zip)
 
-if "edges_gdf" not in st.session_state:
+if edges_zip is not None:
     st.session_state["edges_gdf"] = gpd.read_file(edges_zip)
 
-if "routes_gdf" not in st.session_state:
+if routes_zip is not None:
     st.session_state["routes_gdf"] = gpd.read_file(routes_zip)
 
 # División
