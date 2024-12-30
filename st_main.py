@@ -94,11 +94,13 @@ st.header('Entradas')
 
 st.subheader("Nodos")
 
-nodos_zip = st.file_uploader("Nodos")
+nodes_zip = st.file_uploader("Nodos")
+edges_zip = st.file_uploader("Arcos")
+routes_zip = st.file_uploader("Rutas")
 
-nodos_gdf = gpd.read_file(nodos_zip)
-
-st.write(nodos_gdf)
+nodes_gdf = gpd.read_file(nodes_zip)
+edges_gdf = gpd.read_file(edges_zip)
+routes_gdf = gpd.read_file(routes_zip)
 
 # División
 st.divider()
