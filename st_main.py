@@ -92,8 +92,6 @@ st.header('Entradas')
 
 # Subsubtítulo de Input de Nodos
 
-st.subheader("Nodos")
-
 nodes_zip = st.file_uploader("Nodos")
 edges_zip = st.file_uploader("Arcos")
 routes_zip = st.file_uploader("Rutas")
