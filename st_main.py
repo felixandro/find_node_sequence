@@ -90,6 +90,10 @@ st.title('Encontrar Secuencia de Nodos')
 # Subtítulo de Inputs
 st.header('Entradas')
 
+# Subsubtítulo de Input de Nodos
+
+st.file_uploader("Nodos")
+
 # División
 st.divider()
 
