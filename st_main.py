@@ -94,7 +94,11 @@ st.header('Entradas')
 
 st.subheader("Nodos")
 
-st.file_uploader("Nodos")
+nodos_zip = st.file_uploader("Nodos")
+
+nodos_gdf = gpd.read_file(nodos_zip)
+
+st.write(nodos_gdf)
 
 # División
 st.divider()
