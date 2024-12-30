@@ -96,34 +96,37 @@ nodes_zip = st.file_uploader("Nodos")
 edges_zip = st.file_uploader("Arcos")
 routes_zip = st.file_uploader("Rutas")
 
-if nodes_zip is not None:
-    st.session_state["nodes_gdf"] = gpd.read_file(nodes_zip)
+inputs_are_validated = (nodes_zip is not None)*(edges_zip is not None)*(routes_zip is not None)
 
-if edges_zip is not None:
-    st.session_state["edges_gdf"] = gpd.read_file(edges_zip)
-
-if routes_zip is not None:
-    st.session_state["routes_gdf"] = gpd.read_file(routes_zip)
+if inputs_are_validated:
+    if "nodes_gdf" not in st.session_state:
+        st.session_state["nodes_gdf"] = gpd.read_file(nodes_zip)
+    if "edges_gdf" not in st.session_state:
+        st.session_state["edges_gdf"] = gpd.read_file(edges_zip)
+    if "routes_gdf" not in st.session_state:
+        st.session_state["routes_gdf"] = gpd.read_file(routes_zip)
 
 # División
 st.divider()
 
 #Botón para ejecutar el algoritmo
 
-find_node_sequence_button = st.button("Encontrar Secuencia de Nodos",
-                                      type = "primary",
-                                      on_click = find_node_sequence_to_all_routes,
-                                      args = (st.session_state["nodes_gdf"], node_id_col, 
-                                              st.session_state["edges_gdf"], start_node_col, end_node_col,
-                                              st.session_state["routes_gdf"], route_id_col, route_direction_col))
+if inputs_are_validated:
+    find_node_sequence_button = st.button("Encontrar Secuencia de Nodos",
+                                        type = "primary",
+                                        on_click = find_node_sequence_to_all_routes,
+                                        args = (st.session_state["nodes_gdf"], node_id_col, 
+                                                st.session_state["edges_gdf"], start_node_col, end_node_col,
+                                                st.session_state["routes_gdf"], route_id_col, route_direction_col))
 
-progress_bar = st.progress(0, text = "Buscando Secuencia de Nodos")
-progress_bar.empty()
+    progress_bar = st.progress(0, text = "Buscando Secuencia de Nodos")
+    progress_bar.empty()
 
 # División
 st.divider()
 
 # Subtítulo de Outputs
-st.header('Salidas')
+if inputs_are_validated:
+    st.header('Salidas')
 
-st.write(st.session_state["node_sequences_df"])
+    st.write(st.session_state["node_sequences_df"])
