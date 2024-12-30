@@ -53,22 +53,13 @@ def find_node_sequence_to_all_routes(nodes_gdf, node_id_col,
 ##################
 
 #Nodos
-#nodes_path = "Inputs/Nodos/Nodos.shp"
-#nodes_gdf = gpd.read_file(nodes_path)
-
 node_id_col = "ID"
 
 #Arcos
-#edges_path = "Inputs/Arcos/Arcos.shp"
-#edges_gdf = gpd.read_file(edges_path)
-
 start_node_col = "Nodo A"
 end_node_col = "Nodo B"
 
 #Rutas
-#routes_path = "Inputs/Rutas/Rutas.shp"
-#routes_gdf = gpd.read_file(routes_path)
-
 route_id_col = "Name"
 route_direction_col = "sentido"
 
