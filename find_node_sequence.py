@@ -5,7 +5,6 @@
 import networkx as nx
 from shapely.geometry import Point
 
-
 ##################################
 #####  Funciones Auxiliares ######
 ##################################
@@ -24,6 +23,14 @@ def add_distance_col_to_nodes(linestring, nodes_gdf):
     nodes_gdf_copy["d_to_ls"] = nodes_gdf_copy.geometry.distance(linestring) 
     #d_to_ls es abreviación de distance_to_linestring
     return nodes_gdf_copy
+
+#prepare_edges_gdf: GeoDataFrame Str -> GeoDataFrame
+#Filtra los arcos conservando solo los disponibles según la columna indicada
+def prepare_edges_gdf(edges_gdf, availability_col):
+    edges_gdf_copy = edges_gdf.copy()
+    if availability_col:
+        return edges_gdf_copy[edges_gdf_copy[availability_col] == 1]
+    return edges_gdf_copy
 
 #add_weight_col_to_edges: GeoDataFrame GeoDataFrame Str Str -> GeoDataFrame
 #A cada arco le agrega su peso como el promedio de las distancias 
@@ -47,7 +54,7 @@ def add_weight_col_to_edges(nodes_gdf,
 
 #build_network: GeoDataFrame Str Str Str -> nx.DiGraph
 #Construye el grafo dirigido referente a edges_gdf, el cual debe tener una columna con pesos
-def build_network(edges_gdf, start_node_col, end_node_col):
+def build_network(edges_gdf, start_node_col, end_node_col, available_col = None):
     network = nx.DiGraph() #Grafo Dirigido Vacío
     for _, row in edges_gdf.iterrows():
         start_node = row[start_node_col]
@@ -94,20 +101,24 @@ def get_min_route(network, source_node, sink_node):
 
 #######################################
 #######  Función Consolidadada  #######
+#######        Pipeline         #######
 #######################################
 
 #find_node_sequence: LineString GeoDataFrame Str Str Str Str Str Str -> list[int]
 #Encuentra la secuencia de nodos que minimiza la distancia entre la línea de referencia y los nodos
 def find_node_sequence(linestring, route_direction,
                        nodes_gdf, node_id_col,
-                       edges_gdf, start_node_col, end_node_col):
+                       edges_gdf, start_node_col, end_node_col, availability_col):
     #Preparar GeoDataFrame de Nodos
     nodes_gdf_prepared = prepare_nodes_gdf(nodes_gdf, node_id_col)
     #Agregar Distancia entre Nodos y Linea de Referencia
     nodes_gdf_with_distance = add_distance_col_to_nodes(linestring, nodes_gdf_prepared)
+    
+    #Preparar GeoDataFrame de Arcos
+    edges_gdf_availables = prepare_edges_gdf(edges_gdf, availability_col)
     #Agregar Peso a los Arcos
     edges_gdf_with_weight = add_weight_col_to_edges(nodes_gdf_with_distance, 
-                                                    edges_gdf, start_node_col, end_node_col)
+                                                    edges_gdf_availables, start_node_col, end_node_col)
     #Construir Red
     network = build_network(edges_gdf_with_weight, start_node_col, end_node_col)
     #Puntos Iniciales y Finales

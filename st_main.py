@@ -12,7 +12,7 @@ from find_node_sequence import find_node_sequence
 #Se obtiene un dataframe con la secuencia de nodos para cada una de las rutas
 def find_node_sequence_to_all_routes(nodes_gdf, node_id_col, 
                                      edges_gdf, start_node_col, end_node_col,
-                                     routes_gdf, route_id_col, route_direction_col):
+                                     routes_gdf, route_id_col, route_direction_col, availability_col):
     
     #Cantidad total de rutas
     n_routes = len(routes_gdf)
@@ -31,7 +31,7 @@ def find_node_sequence_to_all_routes(nodes_gdf, node_id_col,
         #Aplicación Algoritmo
         node_sequence = find_node_sequence(linestring, route_direction,
                                            nodes_gdf, node_id_col,
-                                           edges_gdf, start_node_col, end_node_col)
+                                           edges_gdf, start_node_col, end_node_col, availability_col)
         
         #Almacenaje de secuencia de nodos obtenida en el diccionario
         node_sequences_dict[route_id] = node_sequence
@@ -53,11 +53,11 @@ def find_node_sequence_to_all_routes(nodes_gdf, node_id_col,
 ##################
 
 #Nodos
-node_id_col = "ID"
+node_id_col = "nodo"
 
 #Arcos
-start_node_col = "Nodo A"
-end_node_col = "Nodo B"
+start_node_col = "NODOA"
+end_node_col = "NODOB"
 
 #Rutas
 route_id_col = "Name"
@@ -91,33 +91,65 @@ inputs_are_validated = (nodes_zip is not None)*(edges_zip is not None)*(routes_z
 
 if inputs_are_validated:
     if "nodes_gdf" not in st.session_state:
-        st.session_state["nodes_gdf"] = gpd.read_file(nodes_zip)
+        st.session_state["nodes_gdf"] = gpd.read_file(nodes_zip).to_crs("EPSG:32719")
     if "edges_gdf" not in st.session_state:
-        st.session_state["edges_gdf"] = gpd.read_file(edges_zip)
+        st.session_state["edges_gdf"] = gpd.read_file(edges_zip).to_crs("EPSG:32719")
     if "routes_gdf" not in st.session_state:
-        st.session_state["routes_gdf"] = gpd.read_file(routes_zip)
+        st.session_state["routes_gdf"] = gpd.read_file(routes_zip).to_crs("EPSG:32719")
 
-# División
-st.divider()
+    # División
+    st.divider()
+    
+    # Subtítulo de Inputs
+    st.header('Configuración Entradas')
 
-#Botón para ejecutar el algoritmo
+    #Nodos    
+    st.subheader('Nodos')
+    
+    fields_nodes_gdf = st.session_state["nodes_gdf"].columns.to_list()[:-1]
+    
+    node_id_col = st.selectbox("Identificador Nodo",
+                               fields_nodes_gdf)
 
-if inputs_are_validated:
+    #Arcos
+    st.subheader('Arcos')
+    
+    fields_edges_gdf = st.session_state["edges_gdf"].columns.to_list()[:-1]
+    
+    start_node_col = st.selectbox("Identificador Nodo Inicio",
+                                  fields_edges_gdf)
+    end_node_col = st.selectbox("Identificador Nodo Fin",
+                                fields_edges_gdf)
+    availability_col = st.selectbox("Disponibilidad",
+                                    ["Todos los arcos disponibles"] + fields_edges_gdf)
+    if availability_col == "Todos los arcos disponibles":
+        availability_col = None
+                                  
+    #Rutas
+    st.subheader('Rutas')
+    
+    fields_routes_gdf = st.session_state["routes_gdf"].columns.to_list()[:-1]
+    
+    route_id_col = st.selectbox("Identificador Ruta",
+                                fields_routes_gdf)
+    route_direction_col = st.selectbox("Sentido",
+                                       fields_routes_gdf)
+
+    #Botón para ejecutar el algoritmo
     find_node_sequence_button = st.button("Encontrar Secuencia de Nodos",
                                         type = "primary",
                                         on_click = find_node_sequence_to_all_routes,
                                         args = (st.session_state["nodes_gdf"], node_id_col, 
                                                 st.session_state["edges_gdf"], start_node_col, end_node_col,
-                                                st.session_state["routes_gdf"], route_id_col, route_direction_col))
+                                                st.session_state["routes_gdf"], route_id_col, route_direction_col, availability_col))
 
     progress_bar = st.progress(0, text = "Buscando Secuencia de Nodos")
     progress_bar.empty()
 
-# División
-st.divider()
+    # División
+    st.divider()
 
-# Subtítulo de Outputs
-if inputs_are_validated:
+    # Subtítulo de Outputs
     st.header('Salidas')
 
     st.write(st.session_state["node_sequences_df"])
