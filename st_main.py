@@ -48,21 +48,6 @@ def find_node_sequence_to_all_routes(nodes_gdf, node_id_col,
     #Almacenaje de Dataframe con resultado en variable de estado
     st.session_state["node_sequences_df"] = node_sequences_df
 
-##################
-##### Inputs #####
-##################
-
-#Nodos
-node_id_col = "nodo"
-
-#Arcos
-start_node_col = "NODOA"
-end_node_col = "NODOB"
-
-#Rutas
-route_id_col = "Name"
-route_direction_col = "sentido"
-
 #############################
 #### Variables de Estado ####
 #############################
